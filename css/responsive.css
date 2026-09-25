@@ -1,0 +1,79 @@
+/* ==========================================================================\n   Aaron Recovery — Responsive Rules\n   ========================================================================== */
+
+html,body { width:100%; min-height:100%; overflow-x:hidden; overflow-y:auto; }
+#app-root { width:100%; min-height:100vh; height:auto; overflow:visible; }
+.screen { width:100%; height:auto; min-height:auto; overflow:visible; }
+
+/* Long screens, especially Today's Plan, must grow with content. */
+#screen-plan,
+#screen-plan * { max-height:none; }
+#screen-plan { height:auto; min-height:auto; overflow:visible; }
+#screen-plan .meal-card { height:auto; overflow:visible; }
+
+@media (max-width:340px) {
+  :root { --space-4:14px; --space-5:17px; --space-6:23px; --space-7:30px; }
+  .screen { padding-left:12px; padding-right:12px; padding-bottom:calc(var(--nav-h) + 28px); }
+  .page-title { font-size:1.3rem; }
+  .hero-card { padding:20px; }
+  .score-breakdown { grid-template-columns:1fr; }
+  .quick-grid { grid-template-columns:1fr; }
+  .meal-actions { flex-direction:column; }
+  .bottom-nav { min-height:68px; }
+}
+
+@media (min-width:341px) and (max-width:639px) {
+  #app-root { max-width:480px; min-height:100vh; overflow:visible; }
+  .screen { padding:var(--space-5) var(--space-4) calc(var(--nav-h) + var(--space-7)); }
+}
+
+@media (orientation:landscape) and (max-height:600px) {
+  :root { --nav-h:60px; }
+  .screen { padding-top:var(--space-4); padding-bottom:calc(var(--nav-h) + var(--space-5)); }
+  .bottom-nav { min-height:var(--nav-h); }
+}
+
+@media (min-width:640px) {
+  body {
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    min-height:100vh;
+    padding-top:max(var(--safe-top),32px);
+    padding-bottom:32px;
+    background:linear-gradient(180deg,var(--primary-tint) 0%,var(--bg) 340px);
+  }
+  #app-root {
+    width:100%;
+    max-width:460px;
+    min-height:92vh;
+    height:auto;
+    border:1px solid var(--border-soft);
+    border-radius:32px;
+    box-shadow:var(--shadow-lg);
+    overflow:visible;
+  }
+  .screen { padding-left:var(--space-5); padding-right:var(--space-5); padding-bottom:calc(var(--nav-h) + var(--space-7)); }
+  .bottom-nav { width:min(460px,100%); border-radius:0 0 32px 32px; }
+  .sheet { width:min(460px,100%); }
+}
+
+@media (min-width:900px) {
+  body { background:radial-gradient(circle at 30% 0%,var(--primary-tint) 0%,var(--bg) 55%); }
+}
+
+@media (min-width:1200px) {
+  body { padding-top:48px; padding-bottom:48px; }
+  #app-root { max-width:480px; }
+  .bottom-nav,.sheet { width:min(480px,100%); }
+}
+
+@supports (padding:max(0px)) {
+  .screen { padding-bottom:max(calc(var(--nav-h) + var(--space-7)),calc(var(--nav-h) + var(--safe-bottom) + var(--space-5))); }
+}
+
+@media print {
+  html,body { min-height:0; overflow:visible !important; background:#fff !important; color:#000 !important; }
+  #app-root { max-width:none; min-height:0; border:0; border-radius:0; box-shadow:none; overflow:visible !important; }
+  .screen { display:block !important; min-height:0; height:auto; padding:0 !important; overflow:visible !important; animation:none; }
+  .bottom-nav,.btn,button,.toast { display:none !important; }
+}

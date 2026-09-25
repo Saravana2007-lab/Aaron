@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Aaron Recovery</title>
+<meta name="description" content="Recover. Refuel. Rebuild. A personal recovery and nutrition companion." />
+<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="css/responsive.css" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="theme-color" content="#3f7259" />
+</head>
+<body>
+
+<div id="app-root">
+
+  <!-- ============ ONBOARDING ============ -->
+  <div id="onboarding" class="onboard-wrap">
+    <div class="onboard-slide active" data-slide="0">
+      <div class="onboard-emoji" data-icon="leaf"></div>
+      <h1 class="onboard-title">Welcome to Aaron Recovery</h1>
+      <p class="onboard-text">Your personal recovery companion.</p>
+    </div>
+    <div class="onboard-slide" data-slide="1">
+      <div class="onboard-emoji" data-icon="clipboardCheck"></div>
+      <h1 class="onboard-title">Follow your plan</h1>
+      <p class="onboard-text">Your doctor's dietary instructions stay at the center of everything.</p>
+    </div>
+    <div class="onboard-slide" data-slide="2">
+      <div class="onboard-emoji" data-icon="droplet"></div>
+      <h1 class="onboard-title">Small meals. Regular hydration.</h1>
+      <p class="onboard-text">Better consistency, one day at a time.</p>
+    </div>
+    <div class="onboard-slide" data-slide="3">
+      <form id="onboard-form">
+        <h1 class="onboard-title" style="margin-bottom: 20px;">Let's personalize your day</h1>
+        <div style="text-align:left;">
+          <div class="field">
+            <label for="ob-name">Name</label>
+            <input type="text" id="ob-name" value="Aaron" required />
+          </div>
+          <div class="field">
+            <label for="ob-wake">Wake-up time</label>
+            <input type="time" id="ob-wake" value="07:00" />
+          </div>
+          <div class="field">
+            <label for="ob-sleep">Sleep time</label>
+            <input type="time" id="ob-sleep" value="22:30" />
+          </div>
+          <div class="field">
+            <label for="ob-breakfast">Breakfast time</label>
+            <input type="time" id="ob-breakfast" value="07:30" />
+          </div>
+          <div class="field">
+            <label for="ob-lunch">Lunch time</label>
+            <input type="time" id="ob-lunch" value="13:00" />
+          </div>
+          <div class="field">
+            <label for="ob-dinner">Dinner time</label>
+            <input type="time" id="ob-dinner" value="20:00" />
+          </div>
+          <div class="field">
+            <label>Foods he likes</label>
+            <div class="chip-select" id="ob-likes"></div>
+          </div>
+          <div class="field">
+            <label for="ob-dislikes">Foods he dislikes (optional)</label>
+            <input type="text" id="ob-dislikes" placeholder="e.g. bitter gourd" />
+          </div>
+          <div class="field">
+            <label for="ob-fluid">Doctor-provided fluid target in liters (optional)</label>
+            <input type="number" id="ob-fluid" step="0.1" min="0" placeholder="Leave blank if not specified" />
+            <p class="field-hint">We never calculate this automatically — only your doctor sets this number.</p>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Start</button>
+      </form>
+    </div>
+
+    <div class="onboard-dots" id="onboard-dots"></div>
+    <div id="onboard-nav" style="display:flex; gap:10px;">
+      <button class="btn btn-ghost btn-block" id="ob-back" style="display:none;">Back</button>
+      <button class="btn btn-primary btn-block" id="ob-next">Continue</button>
+    </div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <main id="screen-home" class="screen">
+    <header class="page-header">
+      <div class="page-title" id="home-greeting">Good morning, Aaron</div>
+      <div class="page-subtitle">Let's take recovery one meal at a time.</div>
+      <div class="page-subtitle" id="home-date"></div>
+    </header>
+
+    <div id="home-next-up"></div>
+
+    <div class="section-heading">TODAY'S RECOVERY SCORE</div>
+    <div class="card score-card" id="home-score"></div>
+
+    <div class="section-heading">TODAY'S TIMELINE</div>
+    <div class="card">
+      <div class="timeline" id="home-timeline"></div>
+    </div>
+
+    <div class="section-heading">QUICK ACTIONS</div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn btn-secondary" id="btn-im-hungry"><span class="icon" data-icon="utensils" data-icon-size="18"></span>I'm hungry</button>
+      <button class="btn btn-secondary" id="btn-log-outside"><span class="icon" data-icon="receipt" data-icon-size="18"></span>Ate something outside</button>
+    </div>
+  </main>
+
+  <!-- ============ TODAY'S PLAN ============ -->
+  <main id="screen-plan" class="screen">
+    <header class="page-header">
+      <div class="page-title">Today's Plan</div>
+      <div class="page-subtitle" id="plan-date"></div>
+    </header>
+    <div id="plan-list"></div>
+  </main>
+
+  <!-- ============ HYDRATION ============ -->
+  <main id="screen-hydration" class="screen">
+    <header class="page-header">
+      <div class="page-title">Hydration</div>
+      <div class="page-subtitle">Follow your doctor's fluid instructions if you have been given one.</div>
+    </header>
+
+    <div class="card" style="text-align:center;">
+      <div class="page-subtitle">TODAY'S HYDRATION</div>
+      <div style="font-size:2rem; font-weight:800; margin:8px 0;" id="hydration-total"></div>
+      <div class="bar-track" style="height:14px; margin:14px 0;">
+        <div class="bar-fill" id="hydration-bar" style="width:0%"></div>
+      </div>
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
+        <button class="btn btn-secondary" data-ml="250">+ 250 ml</button>
+        <button class="btn btn-secondary" data-ml="300">+ 300 ml</button>
+        <button class="btn btn-secondary" data-ml="500">+ 500 ml</button>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="hydration-undo" style="margin-top:12px;">Undo last</button>
+    </div>
+
+    <div class="section-heading">TODAY'S TIMELINE</div>
+    <div class="card">
+      <div id="hydration-timeline"></div>
+    </div>
+  </main>
+
+  <!-- ============ PROGRESS ============ -->
+  <main id="screen-progress" class="screen">
+    <header class="page-header">
+      <div class="page-title">Progress</div>
+      <div class="page-subtitle">Consistency, not perfection.</div>
+    </header>
+
+    <div class="streak-banner">
+      <div class="icon-chip accent" data-icon="flame" data-icon-size="22"></div>
+      <div>
+        <div style="font-weight:700; font-size:0.9rem;">Recovery Routine</div>
+        <div class="page-subtitle" style="margin-top:0;"><span class="streak-num" id="streak-count">0</span> day streak</div>
+      </div>
+    </div>
+
+    <div class="section-heading">WEEKLY MEAL CONSISTENCY</div>
+    <div class="card" id="progress-week-chart"></div>
+
+    <div class="section-heading">ACHIEVEMENTS</div>
+    <div class="card" id="progress-achievements"></div>
+
+    <div class="section-heading">DAILY CHECK-IN</div>
+    <div class="card" id="progress-checkin-card">
+      <p class="page-subtitle" style="margin-bottom:12px;">How are you feeling today?</p>
+      <button class="btn btn-primary btn-block" id="btn-open-checkin">Do today's check-in</button>
+    </div>
+
+    <div class="section-heading">WEIGHT (OPTIONAL)</div>
+    <div class="card">
+      <div style="display:flex; gap:10px;">
+        <input type="number" id="weight-input" placeholder="kg" style="flex:1; border:1.5px solid var(--border); border-radius:var(--r-sm); padding:12px; background:var(--surface); color:var(--text); font-size:0.95rem;" />
+        <button class="btn btn-secondary" id="btn-save-weight">Save</button>
+      </div>
+      <div id="weight-log-list" style="margin-top:10px;"></div>
+    </div>
+  </main>
+
+  <!-- ============ MORE (hub) ============ -->
+  <main id="screen-more" class="screen">
+    <header class="page-header">
+      <div class="page-title">More</div>
+      <div class="page-subtitle">Aaron Recovery</div>
+    </header>
+    <div class="card" style="padding:0;">
+      <button class="list-row more-link" data-target="screen-food-library" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; padding-left:var(--space-5); padding-right:var(--space-5);">
+        <span class="list-row-title"><span class="icon" data-icon="fruit" data-icon-size="18"></span>Food Library</span><span>›</span>
+      </button>
+      <button class="list-row more-link" data-target="screen-weekly" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; padding-left:var(--space-5); padding-right:var(--space-5);">
+        <span class="list-row-title"><span class="icon" data-icon="calendar" data-icon-size="18"></span>Weekly Plan</span><span>›</span>
+      </button>
+      <button class="list-row more-link" data-target="screen-grocery" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; padding-left:var(--space-5); padding-right:var(--space-5);">
+        <span class="list-row-title"><span class="icon" data-icon="cart" data-icon-size="18"></span>Grocery List</span><span>›</span>
+      </button>
+      <button class="list-row more-link" data-target="screen-guidelines" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; padding-left:var(--space-5); padding-right:var(--space-5);">
+        <span class="list-row-title"><span class="icon" data-icon="clipboard" data-icon-size="18"></span>Doctor's Guidelines</span><span>›</span>
+      </button>
+      <button class="list-row more-link" data-target="screen-safety" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; padding-left:var(--space-5); padding-right:var(--space-5);">
+        <span class="list-row-title"><span class="icon" data-icon="lifeBuoy" data-icon-size="18"></span>Emergency / Safety</span><span>›</span>
+      </button>
+      <button class="list-row more-link" data-target="screen-settings" style="width:100%; background:none; border:none; text-align:left; cursor:pointer; padding-left:var(--space-5); padding-right:var(--space-5);">
+        <span class="list-row-title"><span class="icon" data-icon="gear" data-icon-size="18"></span>Settings</span><span>›</span>
+      </button>
+    </div>
+    <div class="priority-note" style="margin-top:var(--space-6);">Private by design. Your data stays on this device unless you export it.</div>
+<p class="page-subtitle" style="text-align:center; margin-top:var(--space-5);">Recover. Refuel. Rebuild.</p>
+  </main>
+
+  <!-- ============ FOOD LIBRARY ============ -->
+  <main id="screen-food-library" class="screen">
+    <div class="back-row"><button class="icon-btn back-btn" data-target="screen-more">←</button><div class="page-title" style="font-size:1.2rem;">Food Library</div></div>
+    <div class="search-box">
+      <span class="icon" data-icon="search" data-icon-size="18"></span>
+      <input type="text" id="food-search" placeholder="What can I eat? Try 'chicken' or 'rice'" />
+    </div>
+    <div class="tab-row" id="food-tabs"></div>
+    <div id="food-results"></div>
+  </main>
+
+  <!-- ============ WEEKLY PLAN ============ -->
+  <main id="screen-weekly" class="screen">
+    <div class="back-row"><button class="icon-btn back-btn" data-target="screen-more">←</button><div class="page-title" style="font-size:1.2rem;">Weekly Plan</div></div>
+    <div class="week-pills" id="week-pills"></div>
+    <div id="weekly-day-content"></div>
+  </main>
+
+  <!-- ============ GROCERY LIST ============ -->
+  <main id="screen-grocery" class="screen">
+    <div class="back-row"><button class="icon-btn back-btn" data-target="screen-more">←</button><div class="page-title" style="font-size:1.2rem;">Grocery List</div></div>
+    <button class="btn btn-secondary btn-block" id="btn-generate-grocery" style="margin-bottom:16px;">Generate from this week's plan</button>
+    <div id="grocery-list"></div>
+    <button class="btn btn-ghost btn-block" id="btn-clear-purchased" style="margin-top:16px;">Clear purchased</button>
+  </main>
+
+  <!-- ============ DOCTOR'S GUIDELINES ============ -->
+  <main id="screen-guidelines" class="screen">
+    <div class="back-row"><button class="icon-btn back-btn" data-target="screen-more">←</button><div class="page-title" style="font-size:1.2rem;">Doctor's Dietary Guidelines</div></div>
+
+    <div class="card"><h3 style="margin-bottom:6px;">Meal Frequency</h3><p class="page-subtitle">Small frequent meals every 2–3 hours.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;">Hydration</h3><p class="page-subtitle">Consume adequate fluids according to medical instructions.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;">Vegetables</h3><p class="page-subtitle">At least half the plate should consist of non-starchy vegetables (bottle gourd, ridge gourd, okra, spinach, green beans).</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;">Fruits</h3><p class="page-subtitle">Eat a variety of fruits.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;">Whole Grains</h3><p class="page-subtitle">Whole grains, millets, brown rice and quinoa.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;">Lean Protein</h3><p class="page-subtitle">Skinless chicken, turkey, fish, eggs, legumes, pulses, tofu and nuts.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;">Healthy Fats</h3><p class="page-subtitle">Nuts, avocado and reduced-fat dairy.</p></div>
+    <div class="card"><h3 style="margin-bottom:6px;">What to Avoid</h3><p class="page-subtitle">Refined grains, added sugars, unhealthy fats, fried foods, high-salt foods and alcohol.</p></div>
+
+    <div class="priority-note" style="margin-top:20px;">Doctor's instructions always take priority.</div>
+  </main>
+
+  <!-- ============ SAFETY / EMERGENCY ============ -->
+  <main id="screen-safety" class="screen">
+    <div class="back-row"><button class="icon-btn back-btn" data-target="screen-more">←</button><div class="page-title" style="font-size:1.2rem;">Emergency &amp; Safety</div></div>
+
+    <div class="priority-note" style="margin-bottom:16px;">This app does not replace your doctor.</div>
+
+    <div class="card">
+      <h3 style="margin-bottom:10px;">If Aaron notices any of these, contact his doctor or seek urgent medical care</h3>
+      <ul id="safety-symptom-list" style="padding-left:18px; display:flex; flex-direction:column; gap:6px; color:var(--text-muted); font-size:0.9rem;"></ul>
+      <p class="page-subtitle" style="margin-top:12px;">This symptom list can require medical assessment. It is not a diagnosis — please contact your doctor or seek urgent medical care if you notice any of these.</p>
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button class="btn btn-primary btn-block" id="btn-contact-doctor"><span class="icon" data-icon="phone" data-icon-size="18"></span>Contact Doctor</button>
+      <button class="btn btn-danger btn-block" id="btn-emergency-services"><span class="icon" data-icon="alertTriangle" data-icon-size="18"></span>Emergency Services</button>
+    </div>
+
+    <div class="section-heading">Configure contacts</div>
+    <div class="card">
+      <div class="field"><label for="safety-doctor-name">Doctor / clinic name</label><input type="text" id="safety-doctor-name" /></div>
+      <div class="field"><label for="safety-doctor-phone">Doctor phone number</label><input type="tel" id="safety-doctor-phone" /></div>
+      <div class="field"><label for="safety-emergency-number">Emergency services number</label><input type="tel" id="safety-emergency-number" placeholder="e.g. 112" />
+        <p class="field-hint">For India, 112 is a common emergency number — confirm what's appropriate for your situation.</p>
+      </div>
+      <button class="btn btn-secondary btn-block" id="btn-save-safety">Save</button>
+    </div>
+  </main>
+
+  <!-- ============ SETTINGS ============ -->
+  <main id="screen-settings" class="screen">
+    <div class="back-row"><button class="icon-btn back-btn" data-target="screen-more">←</button><div class="page-title" style="font-size:1.2rem;">Settings</div></div>
+
+    <div class="section-heading">Appearance</div>
+    <div class="card">
+      <div class="chip-select" id="theme-select">
+        <button class="chip-option" data-theme="light">Light</button>
+        <button class="chip-option" data-theme="dark">Dark</button>
+        <button class="chip-option" data-theme="system">System</button>
+      </div>
+    </div>
+
+    <div class="section-heading">Reminders</div>
+    <div class="card">
+      <div class="list-row">
+        <div>
+          <div class="list-row-title">Meal reminders</div>
+          <div class="list-row-sub" id="notif-permission-note"></div>
+        </div>
+        <label class="switch"><input type="checkbox" id="reminders-toggle" /><span class="switch-track"></span></label>
+      </div>
+      <div class="field" style="margin-top:12px;">
+        <label for="reminder-timing">Remind me</label>
+        <select id="reminder-timing">
+          <option value="0">At meal time</option>
+          <option value="5">5 minutes before</option>
+          <option value="10">10 minutes before</option>
+          <option value="15">15 minutes before</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-heading">Your Schedule</div>
+    <div class="card">
+      <div class="field"><label for="set-wake">Wake-up time</label><input type="time" id="set-wake"></div>
+      <div class="field"><label for="set-sleep">Sleep time</label><input type="time" id="set-sleep"></div>
+      <div class="field"><label for="set-breakfast">Breakfast time</label><input type="time" id="set-breakfast"></div>
+      <div class="field"><label for="set-lunch">Lunch time</label><input type="time" id="set-lunch"></div>
+      <div class="field"><label for="set-dinner">Dinner time</label><input type="time" id="set-dinner"></div>
+      <div class="field"><label for="set-fluid">Doctor-provided fluid target (liters, optional)</label><input type="number" step="0.1" min="0" id="set-fluid"></div>
+      <button class="btn btn-secondary btn-block" id="btn-save-settings">Save changes</button>
+    </div>
+
+    <div class="section-heading">Privacy &amp; Data</div>
+    <div class="card">
+      <p class="page-subtitle" style="margin-bottom:14px;">Your recovery data stays on this device unless you choose to export it.</p>
+      <div class="settings-action-grid">
+        <button class="btn btn-secondary" id="btn-export-data">Export data</button>
+        <button class="btn btn-ghost" id="btn-import-data">Import data</button>
+      </div>
+      <input type="file" id="data-import-input" accept="application/json,.json" hidden />
+      <button class="btn btn-ghost btn-block" id="btn-reset-app" style="margin-top:10px;">Reset all app data</button>
+    </div>
+
+    <div class="section-heading">App</div>
+    <div class="card">
+      <div class="list-row">
+        <div>
+          <div class="list-row-title">Offline app</div>
+          <div class="list-row-sub" id="pwa-status">Works locally; install is available in supported browsers.</div>
+        </div>
+        <button class="btn btn-secondary btn-sm" id="btn-install-app" hidden>Install</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ MEAL DETAIL (dynamic content injected) ============ -->
+  <main id="screen-meal-detail" class="screen">
+    <div class="back-row"><button class="icon-btn back-btn" data-target="screen-plan">←</button><div class="page-title" style="font-size:1.2rem;">Meal</div></div>
+    <div id="meal-detail-content"></div>
+  </main>
+
+  <!-- ============ BOTTOM NAV ============ -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-btn active" data-screen="screen-home"><span class="nav-icon" data-icon="home" data-icon-size="22"></span>Home</button>
+    <button class="nav-btn" data-screen="screen-plan"><span class="nav-icon" data-icon="calendar" data-icon-size="22"></span>Plan</button>
+    <button class="nav-btn" data-screen="screen-hydration"><span class="nav-icon" data-icon="droplet" data-icon-size="22"></span>Hydration</button>
+    <button class="nav-btn" data-screen="screen-progress"><span class="nav-icon" data-icon="trending" data-icon-size="22"></span>Progress</button>
+    <button class="nav-btn" data-screen="screen-more"><span class="nav-icon" data-icon="dots" data-icon-size="22"></span>More</button>
+  </nav>
+
+  <!-- ============ SHEETS ============ -->
+  <div class="sheet-backdrop" id="sheet-backdrop">
+    <div class="sheet" id="sheet-content"></div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script src="js/icons.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/foodDatabase.js"></script>
+<script src="js/data.js"></script>
+<script src="js/meals.js"></script>
+<script src="js/hydration.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/safety.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
